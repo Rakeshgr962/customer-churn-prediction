@@ -1,0 +1,24 @@
+import pandas as pd
+import joblib
+
+df = pd.read_csv("data/telco.csv")
+
+df.drop(columns=[
+    "Customer ID",
+    "Customer Status",
+    "Churn Score",
+    "Churn Category",
+    "Churn Reason"
+], inplace=True)
+
+df.fillna("Unknown", inplace=True)
+
+from sklearn.preprocessing import LabelEncoder
+
+for col in df.select_dtypes(include="object").columns:
+    le = LabelEncoder()
+    df[col] = le.fit_transform(df[col].astype(str))
+
+X = df.drop("Churn Label", axis=1)
+
+joblib.dump(X.columns.tolist(), "feature_order.pkl")
